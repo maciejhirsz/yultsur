@@ -17,6 +17,32 @@ fn file_to_string(path: &str) -> String {
     content
 }
 
+impl FunctionDefinition {
+    fn from(pair: Pair<Rule>) -> FunctionDefinition {
+        FunctionDefinition {
+            name: Identifier {
+                identifier: "name".to_string(),
+                yultype: None
+            },
+            parameters: vec![],
+            returns: vec![],
+            block: Block { statements: vec![] }
+        }
+    }
+}
+
+impl Statement {
+    fn from(pair: Pair<Rule>) -> Statement {
+        for p in pair.into_inner() {
+            match p.as_rule() {
+                Rule::function_definition => Statement::FunctionDefinition(FunctionDefinition::from(p)),
+                Rule::break_continue => Statement::Break,
+                _ => panic!("")
+            }
+        }
+    }
+}
+
 impl Block {
     fn from(pair: Pair<Rule>) -> Block {
         let mut statements: Vec<Statement> = vec![];
@@ -25,7 +51,7 @@ impl Block {
                 Rule::statement => {
                     //statements.push(Statement::from(p));
                 }
-                c => panic!("{:?}", c),
+                _ => unreachable!()
             }
         }
         Block { statements }
